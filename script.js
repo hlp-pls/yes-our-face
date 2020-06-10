@@ -47,8 +47,8 @@ function setup(){
 	noFill();
 	strokeWeight(3);
 	if(isMobile.any()) strokeWeight(2);
-	//strokeJoin(ROUND);
-	//strokeCap(ROUND);
+	strokeJoin(ROUND);
+	strokeCap(ROUND);
 	Promise.all([
 	faceapi.nets.tinyFaceDetector.loadFromUri('models/'),
 	faceapi.nets.faceLandmark68TinyNet.loadFromUri('models/'),
