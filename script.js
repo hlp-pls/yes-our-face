@@ -45,8 +45,8 @@ let max_face_num = (isMobile.any())? 1 : 5;
 function setup(){
 	createCanvas(windowWidth,windowHeight);
 	noFill();
-	strokeWeight(1);
-	if(isMobile.any()) strokeWeight(0.8);
+	strokeWeight(1.2);
+	if(isMobile.any()) strokeWeight(1.0);
 	strokeJoin(ROUND);
 	strokeCap(ROUND);
 	Promise.all([
@@ -86,7 +86,7 @@ function modelLoaded(){
 }
 
 function draw(){
-	/background(255,1);
+	background(255,1);
 		
 	translate(width/2,height/2);
 	scale(-1,1);
