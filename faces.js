@@ -2,6 +2,8 @@ class Faces{
 
 	constructor(){
 		this.landmarks = [];
+		this.ordered_landmarks = [];
+		this.order_length = 42;
 		this.curves = [];
 		this.curve_num = 68;
 		this.curve_detail = (isMobile.any())? 10 : 20;
@@ -11,8 +13,10 @@ class Faces{
 		this.ex;
 		this.ey;
 		this.stage = 0;
-		this.ease_speed = 0.3;
+		this.ease_speed = 0.2;
 		this.impact = 0.1;
+
+		this.distance_to_target = 0;
 
 		this.is_face = false;
 
@@ -22,16 +26,84 @@ class Faces{
 		for(let i=0; i<this.curve_num; i++){
 			this.curves.push(new Curves(0.3, this.curve_detail));
 		}
+
+		for(let i=0; i<this.order_length; i++){
+			this.ordered_landmarks.push(new Points());
+		}
 	}
 
 	update(_landmarks){
 		this.landmarks = _landmarks;
+
+		this.ordered_landmarks[0].set(this.landmarks[8-4]._x,this.landmarks[8-4]._y);
+		this.ordered_landmarks[1].set(this.landmarks[36]._x,this.landmarks[36]._y);
+		this.ordered_landmarks[2].set(this.landmarks[21]._x,this.landmarks[21]._y);
+		this.ordered_landmarks[3].set(this.landmarks[22]._x,this.landmarks[22]._y);
+		this.ordered_landmarks[4].set(this.landmarks[45]._x,this.landmarks[45]._y);
+
+		let mx = (this.landmarks[2]._x+this.landmarks[14]._x)*0.5;
+		let my = (this.landmarks[2]._y+this.landmarks[14]._y)*0.5;
+
+		let x_82 = -1*(this.landmarks[8+2]._x-mx)+mx;
+		let y_82 = -1*(this.landmarks[8+2]._y-my)+my;
+
+		let x_8 = -1*(this.landmarks[8]._x-mx)+mx;
+		let y_8 = -1*(this.landmarks[8]._y-my)+my;
+
+		let x_8_2 = -1*(this.landmarks[8-2]._x-mx)+mx;
+		let y_8_2 = -1*(this.landmarks[8-2]._y-my)+my;
+
+		this.ordered_landmarks[5].set(x_8_2,y_8_2);
+		this.ordered_landmarks[6].set(x_8,y_8);
+		this.ordered_landmarks[7].set(x_82,y_82);
+		
+		this.ordered_landmarks[8].set(this.landmarks[36]._x,this.landmarks[36]._y);
+		this.ordered_landmarks[9].set(this.landmarks[40]._x,this.landmarks[28]._y);
+		this.ordered_landmarks[10].set(this.landmarks[21]._x,this.landmarks[21]._y);
+		this.ordered_landmarks[11].set(this.landmarks[27]._x,this.landmarks[27]._y);
+		this.ordered_landmarks[12].set(this.landmarks[22]._x,this.landmarks[22]._y);
+		this.ordered_landmarks[13].set(this.landmarks[47]._x,this.landmarks[28]._y);
+		this.ordered_landmarks[14].set(this.landmarks[45]._x,this.landmarks[45]._y);
+
+		this.ordered_landmarks[15].set(this.landmarks[8+4]._x,this.landmarks[8+4]._y);
+		this.ordered_landmarks[16].set(this.landmarks[35]._x,this.landmarks[35]._y);
+		this.ordered_landmarks[17].set(this.landmarks[47]._x,this.landmarks[28]._y);
+		this.ordered_landmarks[18].set(this.landmarks[27]._x,this.landmarks[27]._y);
+		this.ordered_landmarks[19].set(this.landmarks[35]._x,this.landmarks[35]._y);
+		this.ordered_landmarks[20].set(this.landmarks[31]._x,this.landmarks[31]._y);
+		this.ordered_landmarks[21].set(this.landmarks[27]._x,this.landmarks[27]._y);
+		this.ordered_landmarks[22].set(this.landmarks[40]._x,this.landmarks[28]._y);
+		this.ordered_landmarks[23].set(this.landmarks[31]._x,this.landmarks[31]._y);
+
+		this.ordered_landmarks[24].set(this.landmarks[8-4]._x,this.landmarks[8-4]._y);
+		this.ordered_landmarks[25].set(this.landmarks[48]._x,this.landmarks[48]._y);
+		this.ordered_landmarks[26].set(this.landmarks[31]._x,this.landmarks[31]._y);
+
+		this.ordered_landmarks[27].set(this.landmarks[51]._x,this.landmarks[51]._y);
+		this.ordered_landmarks[28].set(this.landmarks[35]._x,this.landmarks[35]._y);
+		this.ordered_landmarks[29].set(this.landmarks[54]._x,this.landmarks[54]._y);
+		this.ordered_landmarks[30].set(this.landmarks[8+4]._x,this.landmarks[8+4]._y);
+		this.ordered_landmarks[31].set(this.landmarks[9]._x,this.landmarks[9]._y);
+		this.ordered_landmarks[32].set(this.landmarks[57]._x,this.landmarks[57]._y);
+		this.ordered_landmarks[33].set(this.landmarks[54]._x,this.landmarks[54]._y);
+		this.ordered_landmarks[34].set(this.landmarks[51]._x,this.landmarks[51]._y);
+		this.ordered_landmarks[35].set(this.landmarks[48]._x,this.landmarks[48]._y);
+		this.ordered_landmarks[36].set(this.landmarks[57]._x,this.landmarks[57]._y);
+		this.ordered_landmarks[37].set(this.landmarks[7]._x,this.landmarks[7]._y);
+		this.ordered_landmarks[38].set(this.landmarks[9]._x,this.landmarks[9]._y);
+		this.ordered_landmarks[39].set(this.landmarks[8]._x,this.landmarks[8]._y);
+		this.ordered_landmarks[40].set(this.landmarks[7]._x,this.landmarks[7]._y);
+		this.ordered_landmarks[41].set(this.landmarks[8-4]._x,this.landmarks[8-4]._y);
+		
+		
 	}
 
 	display(){
 
 		if(this.is_face){
+
 			this.drawseq();
+			
 		}else{
 			/*
 			console.log("lost!");
@@ -123,6 +195,7 @@ class Faces{
 			//console.log(mouth_size);	
 			this.freq = 600 * this.mouth_size / (width * height*0.02) + 100;
 			this.amp = 0.9 * (this.face_size) / (width * height*0.2) + 0.1;
+			this.amp *= this.distance_to_target;
 			this.pan = (this.face_x_pos / width) * (-2.0) + 1.0;
 			this.pan = constrain(this.pan,-1,1);
 
@@ -138,32 +211,48 @@ class Faces{
 
 	drawseq(){
 		//console.log(this.stage,this.landmarks.length);
-		if(this.landmarks.length > 0){
-			if(this.stage < this.landmarks.length){
+		if(this.ordered_landmarks.length > 0){
+			if(this.stage < this.ordered_landmarks.length){
 				if(this.stage==0){
-					this.dx = this.landmarks[0]._x;
-					this.dy = this.landmarks[0]._y;
+					this.dx = this.ordered_landmarks[0]._x;
+					this.dy = this.ordered_landmarks[0]._y;
+				}else{
+					this.distance_to_target = (dist(
+						this.dx,this.dy,
+						this.ordered_landmarks[this.stage]._x,
+						this.ordered_landmarks[this.stage]._y
+						))/
+					(dist(
+						this.ordered_landmarks[this.stage-1]._x,
+						this.ordered_landmarks[this.stage-1]._y,
+						this.ordered_landmarks[this.stage]._x,
+						this.ordered_landmarks[this.stage]._y
+						));
 				}
 
-				this.dx += (this.landmarks[this.stage]._x - this.dx) * this.ease_speed;
-				this.dy += (this.landmarks[this.stage]._y - this.dy) * this.ease_speed;
+				this.dx += (this.ordered_landmarks[this.stage]._x - this.dx) * this.ease_speed;
+				this.dy += (this.ordered_landmarks[this.stage]._y - this.dy) * this.ease_speed;
 
 				if(dist(this.dx,this.dy,
-					this.landmarks[this.stage]._x,
-					this.landmarks[this.stage]._y)<2.0){
+					this.ordered_landmarks[this.stage]._x,
+					this.ordered_landmarks[this.stage]._y)<2.0){
 					this.stage++;
 				}
 			}else{
-				this.dx = this.landmarks[this.stage-1]._x;
-				this.dy = this.landmarks[this.stage-1]._y;
+				this.dx = this.ordered_landmarks[this.stage-1]._x;
+				this.dy = this.ordered_landmarks[this.stage-1]._y;
+				for(let i=0; i<this.stage; i++){
+					this.curves[i].reset();
+				}
+				this.stage = 0;
 			}
 
 			this.ex = -cam_width/2+this.dx;
 			this.ey = -cam_height/2+this.dy;
-
+			
 			for(let i=0; i<this.stage; i++){
-				let tx = -cam_width/2+this.landmarks[i]._x;
-				let ty = -cam_height/2+this.landmarks[i]._y;
+				let tx = -cam_width/2+this.ordered_landmarks[i]._x;
+				let ty = -cam_height/2+this.ordered_landmarks[i]._y;
 				let tv = createVector(tx,ty);
 				if(!this.curves[i].has_init()){ 
 					this.curves[i].init(tv); 
@@ -172,15 +261,18 @@ class Faces{
 					this.curves[i].display();
 				}
 			}
-
+			
 			beginShape();
 			for(let i=0; i<this.stage; i++){
-				let x = -cam_width/2+this.landmarks[i]._x;
-				let y = -cam_height/2+this.landmarks[i]._y;
+				let x = -cam_width/2+this.ordered_landmarks[i]._x;
+				let y = -cam_height/2+this.ordered_landmarks[i]._y;
 				vertex(x,y);
+				ellipse(x,y,5,5);
 			}
 			vertex(this.ex,this.ey);
 			endShape();
+			ellipse(this.ex,this.ey,10,10);
+
 		}
 	}
 

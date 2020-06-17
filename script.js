@@ -42,13 +42,15 @@ let is_playing = false;
 let face_landmarks = [];
 let max_face_num = (isMobile.any())? 1 : 5;
 
+let cam_count = 0;
+
 function setup(){
 	createCanvas(windowWidth,windowHeight);
 	noFill();
-	strokeWeight(1.2);
+	strokeWeight(1.5);
 	if(isMobile.any()) strokeWeight(1.0);
 	strokeJoin(ROUND);
-	strokeCap(ROUND);
+	//strokeCap(ROUND);
 	Promise.all([
 	faceapi.nets.tinyFaceDetector.loadFromUri('models/'),
 	faceapi.nets.faceLandmark68TinyNet.loadFromUri('models/'),
@@ -86,8 +88,8 @@ function modelLoaded(){
 }
 
 function draw(){
-	background(255,1);
-		
+	background(255);
+
 	translate(width/2,height/2);
 	scale(-1,1);
 	
@@ -112,15 +114,23 @@ function draw(){
 		cam_height *= scr_scale;
 	}
 	// --> 여기까지.
-
+	
 	if(is_model_loaded){
-
-		//카메라 피드와 기하형태 위치 확인
-		/*image(	webcam,
+		// --> 일정시간이 지난후 카메라 피드 사라지도록 
+		/*  
+		if(cam_count<400){
+			cam_count++;
+			//카메라 피드와 기하형태 위치 확인
+			image(webcam,
 			-cam_width/2,
 			-cam_height/2,
-			cam_width,cam_height);*/
+			cam_width,cam_height);
+		}
 
+		if(cam_count>=200){
+			background(255,1);
+		}
+		*/
 		predict_count++;
 
 		if(predict_count>predictRate){
@@ -140,117 +150,8 @@ function draw(){
 	//console.log(landmark_points);
 }
 
-
-
-function drawFace(){
-	//face outline
-	stroke(0);
-	noFill();
-	beginShape();
-	for(let i=0; i<17; i++){
-		let x = -cam_width/2+landmark_points[i]._x;
-		let y = -cam_height/2+landmark_points[i]._y;
-		vertex(x,y);
-	}
-	endShape();
-
-	//right eyebrow
-	beginShape();
-	for(let i=17; i<22; i++){
-		let x = -cam_width/2+landmark_points[i]._x;
-		let y = -cam_height/2+landmark_points[i]._y;
-		vertex(x,y);
-	}
-	endShape();
-
-	//left eyebrow
-	beginShape();
-	for(let i=22; i<27; i++){
-		let x = -cam_width/2+landmark_points[i]._x;
-		let y = -cam_height/2+landmark_points[i]._y;
-		vertex(x,y);
-	}
-	endShape();
-
-	//nose
-	beginShape();
-	for(let i=27; i<36; i++){
-		let x = -cam_width/2+landmark_points[i]._x;
-		let y = -cam_height/2+landmark_points[i]._y;
-		vertex(x,y);
-	}
-	endShape();
-
-	//eye1
-	beginShape();
-	for(let i=36; i<42; i++){
-		let x = -cam_width/2+landmark_points[i]._x;
-		let y = -cam_height/2+landmark_points[i]._y;
-		vertex(x,y);
-	}
-	endShape(CLOSE);
-
-	//eye2
-	beginShape();
-	for(let i=42; i<48; i++){
-		let x = -cam_width/2+landmark_points[i]._x;
-		let y = -cam_height/2+landmark_points[i]._y;
-		vertex(x,y);
-	}
-	endShape(CLOSE);
-
-	//fill(255,0,0);
-	//mouth upperlip
-	beginShape();
-	for(let i=48; i<55; i++){
-		let x = -cam_width/2+landmark_points[i]._x;
-		let y = -cam_height/2+landmark_points[i]._y;
-		vertex(x,y);
-	}
-
-	for(let i=64; i>=60; i--){
-		let x = -cam_width/2+landmark_points[i]._x;
-		let y = -cam_height/2+landmark_points[i]._y;
-		vertex(x,y);
-	}
-	endShape(CLOSE);
-
-	//mouth lowerlip
-	beginShape();
-	{
-		let x = -cam_width/2+landmark_points[64]._x;
-		let y = -cam_height/2+landmark_points[64]._y;
-		vertex(x,y);
-	}
-
-	for(let i=54; i<60; i++){
-		let x = -cam_width/2+landmark_points[i]._x;
-		let y = -cam_height/2+landmark_points[i]._y;
-		vertex(x,y);
-	}
-
-	{
-		let x = -cam_width/2+landmark_points[48]._x;
-		let y = -cam_height/2+landmark_points[48]._y;
-		vertex(x,y);
-	}
-
-	{
-		let x = -cam_width/2+landmark_points[60]._x;
-		let y = -cam_height/2+landmark_points[60]._y;
-		vertex(x,y);
-	}
-
-	for(let i=landmark_points.length-1; i>=64; i--){
-		let x = -cam_width/2+landmark_points[i]._x;
-		let y = -cam_height/2+landmark_points[i]._y;
-		vertex(x,y);
-	}
-	endShape(CLOSE);
-}
-
 async function predict(){
-	let input_size = 256;
+	let input_size = 160;
 	if(isMobile.any()) input_size = 96;
 	const options = new faceapi.TinyFaceDetectorOptions({ inputSize: input_size })
 	const video = document.getElementsByTagName('video')[0];
@@ -272,4 +173,4 @@ async function predict(){
 			}
 		}
 	}
-} 
+}
