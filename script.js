@@ -48,7 +48,7 @@ function setup(){
 	createCanvas(windowWidth,windowHeight);
 	noFill();
 	strokeWeight(1.5);
-	if(isMobile.any()) strokeWeight(1.0);
+	//if(isMobile.any()) strokeWeight(1.0);
 	strokeJoin(ROUND);
 	//strokeCap(ROUND);
 	Promise.all([
@@ -97,11 +97,9 @@ function draw(){
 	if(width>height){
 		cam_width = height * webcam.width/webcam.height;
 		cam_height = height;
-
 	}else{
 		cam_width = width;
 		cam_height = width * webcam.height/webcam.width;
-
 	}
 
 	if(width>cam_width){

@@ -16,6 +16,9 @@ class Faces{
 		this.ease_speed = 0.2;
 		this.impact = 0.1;
 
+		this.drawing = true;
+		this.reset_count = 0;
+
 		this.distance_to_target = 0;
 
 		this.is_face = false;
@@ -34,7 +37,7 @@ class Faces{
 
 	update(_landmarks){
 		this.landmarks = _landmarks;
-
+		/*
 		this.ordered_landmarks[0].set(this.landmarks[8-4]._x,this.landmarks[8-4]._y);
 		this.ordered_landmarks[1].set(this.landmarks[36]._x,this.landmarks[36]._y);
 		this.ordered_landmarks[2].set(this.landmarks[21]._x,this.landmarks[21]._y);
@@ -94,7 +97,7 @@ class Faces{
 		this.ordered_landmarks[39].set(this.landmarks[8]._x,this.landmarks[8]._y);
 		this.ordered_landmarks[40].set(this.landmarks[7]._x,this.landmarks[7]._y);
 		this.ordered_landmarks[41].set(this.landmarks[8-4]._x,this.landmarks[8-4]._y);
-		
+		*/
 		
 	}
 
@@ -193,8 +196,8 @@ class Faces{
 			}
 
 			//console.log(mouth_size);	
-			this.freq = 600 * this.mouth_size / (width * height*0.02) + 100;
-			this.amp = 0.9 * (this.face_size) / (width * height*0.2) + 0.1;
+			this.freq = 600 * this.mouth_size / (width * height * 0.02) + 100;
+			this.amp = 0.9 * (this.face_size) / (width * height * 0.2) + 0.1;
 			this.amp *= this.distance_to_target;
 			this.pan = (this.face_x_pos / width) * (-2.0) + 1.0;
 			this.pan = constrain(this.pan,-1,1);
@@ -203,56 +206,82 @@ class Faces{
 			this.osc.amp(this.amp, 0.1);
 			this.osc.pan(this.pan, 0.1);
 
-			this.impact = this.mouth_size * 0.5 / (width*height*0.02);
+			this.impact = (this.mouth_size * 0.5) / (width * height * 0.02);
+
 		}else{
 			this.osc.amp(0.0);
 		}
+
 	}
 
 	drawseq(){
 		//console.log(this.stage,this.landmarks.length);
-		if(this.ordered_landmarks.length > 0){
-			if(this.stage < this.ordered_landmarks.length){
+		if(this.landmarks.length > 0){
+			if(this.stage < this.landmarks.length){
 				if(this.stage==0){
-					this.dx = this.ordered_landmarks[0]._x;
-					this.dy = this.ordered_landmarks[0]._y;
+					this.dx = this.landmarks[0]._x;
+					this.dy = this.landmarks[0]._y;
 				}else{
 					this.distance_to_target = (dist(
 						this.dx,this.dy,
-						this.ordered_landmarks[this.stage]._x,
-						this.ordered_landmarks[this.stage]._y
+						this.landmarks[this.stage]._x,
+						this.landmarks[this.stage]._y
 						))/
 					(dist(
-						this.ordered_landmarks[this.stage-1]._x,
-						this.ordered_landmarks[this.stage-1]._y,
-						this.ordered_landmarks[this.stage]._x,
-						this.ordered_landmarks[this.stage]._y
+						this.landmarks[this.stage-1]._x,
+						this.landmarks[this.stage-1]._y,
+						this.landmarks[this.stage]._x,
+						this.landmarks[this.stage]._y
 						));
 				}
 
-				this.dx += (this.ordered_landmarks[this.stage]._x - this.dx) * this.ease_speed;
-				this.dy += (this.ordered_landmarks[this.stage]._y - this.dy) * this.ease_speed;
+				this.dx += (this.landmarks[this.stage]._x - this.dx) * this.ease_speed;
+				this.dy += (this.landmarks[this.stage]._y - this.dy) * this.ease_speed;
 
 				if(dist(this.dx,this.dy,
-					this.ordered_landmarks[this.stage]._x,
-					this.ordered_landmarks[this.stage]._y)<2.0){
+					this.landmarks[this.stage]._x,
+					this.landmarks[this.stage]._y)<2.0){
 					this.stage++;
 				}
+				this.drawing = true;
 			}else{
-				this.dx = this.ordered_landmarks[this.stage-1]._x;
-				this.dy = this.ordered_landmarks[this.stage-1]._y;
-				for(let i=0; i<this.stage; i++){
-					this.curves[i].reset();
+				this.dx = this.landmarks[this.stage-1]._x;
+				this.dy = this.landmarks[this.stage-1]._y;
+				this.reset_count++;
+				this.drawing = false;
+				if(this.reset_count/getFrameRate() > 60){
+					for(let i=0; i<this.stage; i++){
+						this.curves[i].reset();
+					}
+					this.stage = 0;
+					this.reset_count = 0;
+					
 				}
-				this.stage = 0;
 			}
 
 			this.ex = -cam_width/2+this.dx;
 			this.ey = -cam_height/2+this.dy;
-			
+			if(this.drawing){
+				fill(0);
+				noStroke();
+				for(let i=0; i<this.stage; i++){
+					let x = -cam_width/2+this.landmarks[i]._x;
+					let y = -cam_height/2+this.landmarks[i]._y;
+					push();
+					translate(x,y);
+					scale(-1,1);
+					text(i,0,0);
+					scale(-1,1);
+					pop();
+				}
+			}
+
+			noFill();
+			stroke(0);
+			strokeWeight(1.5);
 			for(let i=0; i<this.stage; i++){
-				let tx = -cam_width/2+this.ordered_landmarks[i]._x;
-				let ty = -cam_height/2+this.ordered_landmarks[i]._y;
+				let tx = -cam_width/2+this.landmarks[i]._x;
+				let ty = -cam_height/2+this.landmarks[i]._y;
 				let tv = createVector(tx,ty);
 				if(!this.curves[i].has_init()){ 
 					this.curves[i].init(tv); 
@@ -264,14 +293,14 @@ class Faces{
 			
 			beginShape();
 			for(let i=0; i<this.stage; i++){
-				let x = -cam_width/2+this.ordered_landmarks[i]._x;
-				let y = -cam_height/2+this.ordered_landmarks[i]._y;
+				let x = -cam_width/2+this.landmarks[i]._x;
+				let y = -cam_height/2+this.landmarks[i]._y;
 				vertex(x,y);
 				ellipse(x,y,5,5);
 			}
 			vertex(this.ex,this.ey);
 			endShape();
-			ellipse(this.ex,this.ey,10,10);
+			ellipse(this.ex,this.ey,5,5);
 
 		}
 	}
