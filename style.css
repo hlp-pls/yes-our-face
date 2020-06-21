@@ -22,6 +22,14 @@ video{
 	font-family: 'Roboto Mono', monospace;
 }
 
-#sound,#record:hover{
+#sound:hover{
+	cursor: pointer;
+}
+
+#record:hover{
+	cursor: pointer;
+}
+
+#capture:hover{
 	cursor: pointer;
 }

@@ -29,28 +29,34 @@ let cam_width;
 let cam_height;
 let scr_scale;
 
-let instruction_DOM = document.getElementById("instructions");
-let count_DOM = document.getElementById("countdown");
-let record_DOM = document.getElementById("record");
-let sound_DOM = document.getElementById("sound");
+let select_container;
+let select_p5dom;
+let instruction_p5dom, capture_p5dom, record_p5dom, sound_p5dom;
+let amp_p5dom, pan_p5dom, freq_p5dom;
 
-let predictRate = (isMobile.any())? 3 : 2;
+let predictRate = (isMobile.any())? 8 : 2;
 let predict_count = 0;
 
 let is_playing = false;
 
 let face_landmarks = [];
+let face_count = 0;
 let max_face_num = (isMobile.any())? 1 : 5;
 
 let cam_count = 0;
+
+let recorder, soundFile;
+let is_recording = false;
+let record_count = 0;
+
+let stroke_selection = 1.5;
 
 function setup(){
 	createCanvas(windowWidth,windowHeight);
 	noFill();
 	strokeWeight(1.5);
-	//if(isMobile.any()) strokeWeight(1.0);
 	strokeJoin(ROUND);
-	//strokeCap(ROUND);
+	strokeCap(SQUARE);
 	Promise.all([
 	faceapi.nets.tinyFaceDetector.loadFromUri('models/'),
 	faceapi.nets.faceLandmark68TinyNet.loadFromUri('models/'),
@@ -61,19 +67,79 @@ function setup(){
 	for(let i=0; i<max_face_num; i++){
 		face_landmarks.push(new Faces());
 	}
+
+	amp_p5dom = select('#amp');
+	freq_p5dom = select('#freq');
+	pan_p5dom = select('#pan');
+
+	sound_p5dom = select('#sound');
+	instruction_p5dom = select('#instructions');
+	capture_p5dom = select('#capture');
+	record_p5dom = select('#record');
+
+	select_p5dom = createSelect();
+	select_p5dom.option('1');
+	select_p5dom.option('2');
+	select_p5dom.option('3');
+	select_p5dom.option('4');
+	select_p5dom.changed(selectionChanged);
+
+	select_container = select('#select');
+	select_container.child(select_p5dom);
+
+	if(isMobile.any()){
+		sound_p5dom.touchEnded(initSound);
+		capture_p5dom.touchEnded(captureScreen);
+		record_p5dom.touchEnded(recordSound);
+	}else{
+		sound_p5dom.mouseClicked(initSound);
+		capture_p5dom.mouseClicked(captureScreen);
+		record_p5dom.mouseClicked(recordSound);
+	}
+
+	recorder = new p5.SoundRecorder();
+	recorder.setInput();
+
+	soundFile = new p5.SoundFile();
 }
 
-sound_DOM.addEventListener("click",initSound,false);
-sound_DOM.addEventListener("touchstart",initSound,false);
+function selectionChanged(){
+	console.log("selection changed!");
+	if(select_p5dom.value()=='1'){
+		stroke_selection = 1.5;
+	}else if(select_p5dom.value()=='2'){
+		stroke_selection = 3;
+	}else if(select_p5dom.value()=='3'){
+		stroke_selection = 6;
+	}else if(select_p5dom.value()=='4'){
+		stroke_selection = 10;
+	}
+}
+
+function captureScreen(){
+	console.log("capture!");
+	saveFrames('capture', 'png', 2.0 / getFrameRate() , getFrameRate());
+}
+
+function recordSound(){
+	record_count++;
+	if(!is_recording){
+		record_p5dom.html( "Press again to save" );
+		is_recording = true;
+	}else{
+		record_p5dom.html( "Record sound" );
+		is_recording = false;
+	}
+}
 
 function initSound(){
 	if(!is_playing){
 		userStartAudio();
 		is_playing = true;
-		sound_DOM.innerText = "Sound OFF."
+		sound_p5dom.html( "Sound OFF" );
 	}else{
 		is_playing = false;
-		sound_DOM.innerText = "Sound ON."
+		sound_p5dom.html( "Sound ON" );
 	}
 }
 
@@ -84,7 +150,8 @@ function windowResized(){
 function modelLoaded(){
 	console.log("model loaded");
 	is_model_loaded = true;
-	instruction_DOM.innerText = "Model loaded!";
+	instruction_p5dom.html( "Model loaded!" );
+	instruction_p5dom.remove();
 }
 
 function draw(){
@@ -92,6 +159,10 @@ function draw(){
 
 	translate(width/2,height/2);
 	scale(-1,1);
+
+	let amp = 0;
+	let freq = 0;
+	let pan = 0;
 	
 	//카메라와 윈도우 화면비율에 따라 크기 조정하기 위한 코드. 여기서부터 <--
 	if(width>height){
@@ -141,11 +212,35 @@ function draw(){
 			for(let i=0; i<face_landmarks.length; i++){
 				face_landmarks[i].display();
 				face_landmarks[i].sound(is_playing);
+				amp += face_landmarks[i].get_amp();
+				freq += face_landmarks[i].get_freq();
+				pan += face_landmarks[i].get_pan();
+			}
+			
+			if(face_count!=0){
+				amp /= face_count;
+				freq /= face_count;
+				pan /= face_count;
 			}
 		}
 
 	}
 	//console.log(landmark_points);
+	if(is_playing){
+		if(is_recording){
+			recorder.record(soundFile);
+		}else if(record_count>0){
+			record_count = -1;
+			recorder.stop();
+		}else if(record_count==-1){
+			record_count = 0;
+			save(soundFile, 'recording.wav');
+		}
+
+		amp_p5dom.html('Amplitude : ' + amp);
+		pan_p5dom.html('Stereo Pan : ' + pan);
+		freq_p5dom.html('Frequency : ' + freq);
+	}
 }
 
 async function predict(){
@@ -162,13 +257,16 @@ async function predict(){
 		//console.log(detections[0].landmarks)
 		const resizedDetections = faceapi.resizeResults(detections,displaySize);
 	if(resizedDetections[0]){
+		face_count = 0;
 		for(let i=0; i<max_face_num; i++){
 			if(resizedDetections[i]){ 
 				face_landmarks[i].update(resizedDetections[i].landmarks._positions);
 				face_landmarks[i].isFace(true);
+				face_count ++;
 			}else{
 				face_landmarks[i].isFace(false);
 			}
 		}
+		//console.log(face_count);
 	}
 }

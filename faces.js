@@ -6,7 +6,7 @@ class Faces{
 		this.order_length = 42;
 		this.curves = [];
 		this.curve_num = 68;
-		this.curve_detail = (isMobile.any())? 10 : 20;
+		this.curve_detail = (isMobile.any())? 8 : 20;
 
 		this.dx;
 		this.dy;
@@ -15,6 +15,10 @@ class Faces{
 		this.stage = 0;
 		this.ease_speed = 0.2;
 		this.impact = 0.1;
+
+		this.amp = 0;
+		this.freq = 0;
+		this.pan = 0;
 
 		this.drawing = true;
 		this.reset_count = 0;
@@ -196,8 +200,9 @@ class Faces{
 			}
 
 			//console.log(mouth_size);	
-			this.freq = 600 * this.mouth_size / (width * height * 0.02) + 100;
-			this.amp = 0.9 * (this.face_size) / (width * height * 0.2) + 0.1;
+			this.freq = ( 600 * this.mouth_size / (width * height * 0.02) + 100 ) * 5.0 / stroke_selection;
+			this.amp = 0.9 * (-1. * this.face_size) / (width * height * 0.2) + 0.1;
+			//console.log(this.face_size);
 			this.amp *= this.distance_to_target;
 			this.pan = (this.face_x_pos / width) * (-2.0) + 1.0;
 			this.pan = constrain(this.pan,-1,1);
@@ -212,6 +217,18 @@ class Faces{
 			this.osc.amp(0.0);
 		}
 
+	}
+
+	get_amp(){
+		return this.amp;
+	}
+
+	get_pan(){
+		return this.pan;
+	}
+
+	get_freq(){
+		return this.freq;
 	}
 
 	drawseq(){
@@ -278,7 +295,7 @@ class Faces{
 
 			noFill();
 			stroke(0);
-			strokeWeight(1.5);
+			strokeWeight(stroke_selection);
 			for(let i=0; i<this.stage; i++){
 				let tx = -cam_width/2+this.landmarks[i]._x;
 				let ty = -cam_height/2+this.landmarks[i]._y;
