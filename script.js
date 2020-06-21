@@ -34,7 +34,7 @@ let select_p5dom;
 let instruction_p5dom, capture_p5dom, record_p5dom, sound_p5dom;
 let amp_p5dom, pan_p5dom, freq_p5dom;
 
-let predictRate = (isMobile.any())? 8 : 2;
+let predictRate = (isMobile.any())? 4 : 2;
 let predict_count = 0;
 
 let is_playing = false;
