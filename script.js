@@ -200,6 +200,12 @@ function draw(){
 			background(255,1);
 		}
 		*/
+		
+		//카메라 피드와 기하형태 위치 확인
+		image(webcam,
+		-cam_width/2,
+		-cam_height/2,
+		cam_width,cam_height);
 		predict_count++;
 
 		if(predict_count>predictRate){
