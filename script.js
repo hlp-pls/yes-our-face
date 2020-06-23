@@ -34,7 +34,7 @@ let select_p5dom;
 let instruction_p5dom, capture_p5dom, record_p5dom, sound_p5dom;
 let amp_p5dom, pan_p5dom, freq_p5dom;
 
-let predictRate = (isMobile.any())? 4 : 2;
+let predictRate = (isMobile.any())? 8 : 2;
 let predict_count = 0;
 
 let is_playing = false;
@@ -50,6 +50,8 @@ let is_recording = false;
 let record_count = 0;
 
 let stroke_selection = 1.5;
+
+let _year, _month, _day, _hour, _minute, _second;
 
 function setup(){
 	createCanvas(windowWidth,windowHeight);
@@ -118,17 +120,40 @@ function selectionChanged(){
 
 function captureScreen(){
 	console.log("capture!");
-	saveFrames('capture', 'png', 2.0 / getFrameRate() , getFrameRate());
+	_year = year(); 
+	_month = month(); 
+	_day = day(); 
+	_hour = hour(); 
+	_minute = minute();
+	_second = second();
+	/*
+	saveFrames('YesOurFace'+ '_' +
+		_year + '_' +
+		_month + '_' +
+		_day + '_' +
+		_hour + '_' +
+		_minute
+		, 'png', 3.0 / getFrameRate() , getFrameRate());
+	*/
+	save('YesOurFace'+ '_' +
+		_year + '_' +
+		_month + '_' +
+		_day + '_' +
+		_hour + '_' +
+		_minute +
+		'.png');
 }
 
 function recordSound(){
-	record_count++;
-	if(!is_recording){
-		record_p5dom.html( "Press again to save" );
-		is_recording = true;
-	}else{
-		record_p5dom.html( "Record sound" );
-		is_recording = false;
+	if(is_playing){
+		record_count++;
+		if(!is_recording){
+			record_p5dom.html("<span class='highlight'>" + "Press again to save" + "</span>");
+			is_recording = true;
+		}else{
+			record_p5dom.html("<span class='highlight'>" + "Record sound" + "</span>");
+			is_recording = false;
+		}
 	}
 }
 
@@ -136,10 +161,10 @@ function initSound(){
 	if(!is_playing){
 		userStartAudio();
 		is_playing = true;
-		sound_p5dom.html( "Sound OFF" );
+		sound_p5dom.html("<span class='highlight'>" + "Sound OFF" + "</span>");
 	}else{
 		is_playing = false;
-		sound_p5dom.html( "Sound ON" );
+		sound_p5dom.html("<span class='highlight'>" + "Sound ON" + "</span>");
 	}
 }
 
@@ -200,12 +225,6 @@ function draw(){
 			background(255,1);
 		}
 		*/
-		
-		//카메라 피드와 기하형태 위치 확인
-		image(webcam,
-		-cam_width/2,
-		-cam_height/2,
-		cam_width,cam_height);
 		predict_count++;
 
 		if(predict_count>predictRate){
@@ -228,6 +247,11 @@ function draw(){
 				freq /= face_count;
 				pan /= face_count;
 			}
+
+			pan = pan * 0.5 + 0.5;
+			pan = floor(pan * 100);
+			amp = floor(amp * 100);
+			freq = floor(freq);
 		}
 
 	}
@@ -240,11 +264,25 @@ function draw(){
 			recorder.stop();
 		}else if(record_count==-1){
 			record_count = 0;
-			save(soundFile, 'recording.wav');
+
+			_year = year(); 
+			_month = month(); 
+			_day = day(); 
+			_hour = hour(); 
+			_minute = minute();
+			_second = second();
+
+			save(soundFile, 'YesOurFace'+ '_' +
+				_year + '_' +
+				_month + '_' +
+				_hour + '_' +
+				_day + '_' +
+				_minute +
+				'.wav');
 		}
 
 		amp_p5dom.html('Amplitude : ' + amp);
-		pan_p5dom.html('Stereo Pan : ' + pan);
+		pan_p5dom.html('Stereo Pan : ' + 'L' + (100-pan) + ' R' + (pan));
 		freq_p5dom.html('Frequency : ' + freq);
 	}
 }
