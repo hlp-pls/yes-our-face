@@ -296,6 +296,9 @@ function draw(){
 			_minute = minute();
 			_second = second();
 
+			record_p5dom.html("<span class='highlight'>" + "Record Sound" + "</span>");
+			is_recording = false;
+
 			save(soundFile, 'YesOurFace'+ '_' +
 				_year + '_' +
 				_month + '_' +
