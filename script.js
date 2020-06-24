@@ -212,12 +212,13 @@ function draw(){
 	if(is_model_loaded){
 		
 		//카메라 피드와 기하형태 위치 확인
-		/*
+		
 		image(webcam,
 		-cam_width/2,
 		-cam_height/2,
 		cam_width,cam_height);
-		*/
+		
+		background(255);
 		
 		predict_count++;
 		//console.log(predict_count, predictRate);
