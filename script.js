@@ -44,6 +44,8 @@ let face_count = 0;
 let max_face_num = (isMobile.any())? 1 : 5;
 
 let cam_count = 0;
+let cam_show = false;
+let canvas_touch_count = 0;
 
 let recorder, soundFile;
 let is_recording = false;
@@ -89,20 +91,44 @@ function setup(){
 	select_container = select('#select');
 	select_container.child(select_p5dom);
 
+
 	if(isMobile.any()){
 		sound_p5dom.touchEnded(initSound);
 		capture_p5dom.touchEnded(captureScreen);
 		record_p5dom.touchEnded(recordSound);
+		select('canvas').touchEnded(canvasTouchCount);
 	}else{
 		sound_p5dom.mouseClicked(initSound);
 		capture_p5dom.mouseClicked(captureScreen);
 		record_p5dom.mouseClicked(recordSound);
+		select('canvas').doubleClicked(canvasDoubleInteraction);
 	}
 
 	recorder = new p5.SoundRecorder();
 	recorder.setInput();
 
 	soundFile = new p5.SoundFile();
+}
+
+function canvasTouchCount(){
+	if(!cam_show){
+		canvas_touch_count++;
+		if(canvas_touch_count>2){
+			canvasDoubleInteraction();
+			canvas_touch_count = 0;
+		}
+	}else{
+		canvasDoubleInteraction();
+	}
+}
+
+function canvasDoubleInteraction(){
+	console.log("double clicked");
+	if(cam_show){
+		cam_show = false;
+	}else{
+		cam_show = true;
+	}
 }
 
 function selectionChanged(){
@@ -148,10 +174,10 @@ function recordSound(){
 	if(is_playing){
 		record_count++;
 		if(!is_recording){
-			record_p5dom.html("<span class='highlight'>" + "Press again to save" + "</span>");
+			record_p5dom.html("<span class='highlight'>" + "Save Sound" + "</span>");
 			is_recording = true;
 		}else{
-			record_p5dom.html("<span class='highlight'>" + "Record sound" + "</span>");
+			record_p5dom.html("<span class='highlight'>" + "Record Sound" + "</span>");
 			is_recording = false;
 		}
 	}
@@ -161,10 +187,10 @@ function initSound(){
 	if(!is_playing){
 		userStartAudio();
 		is_playing = true;
-		sound_p5dom.html("<span class='highlight'>" + "Sound OFF" + "</span>");
+		sound_p5dom.html("<div class='categ'>" + "Sound" + "</div>" + "<div id='onoff'><span class='highlight'>" + "OFF" + "</span></div>");
 	}else{
 		is_playing = false;
-		sound_p5dom.html("<span class='highlight'>" + "Sound ON" + "</span>");
+		sound_p5dom.html("<div class='categ'>" + "Sound" + "</div>" + "<div id='onoff'><span class='highlight'>" + "ON" + "</span></div>");
 	}
 }
 
@@ -218,7 +244,9 @@ function draw(){
 		-cam_height/2,
 		cam_width,cam_height);
 		
-		background(255);
+		if(!cam_show){
+			background(255);
+		}
 		
 		predict_count++;
 		//console.log(predict_count, predictRate);
@@ -277,10 +305,11 @@ function draw(){
 				'.wav');
 		}
 
-		amp_p5dom.html('Amplitude : ' + amp);
-		pan_p5dom.html('Stereo Pan : ' + 'L' + (100-pan) + ' R' + (pan));
-		freq_p5dom.html('Frequency : ' + freq);
 	}
+
+	amp_p5dom.html('Amplitude : ' + amp);
+	pan_p5dom.html('Stereo Pan : ' + 'L' + (100-pan) + ' R' + (pan));
+	freq_p5dom.html('Frequency : ' + freq);
 }
 
 async function predict(){

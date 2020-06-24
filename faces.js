@@ -123,7 +123,7 @@ class Faces{
 	}
 
 	sound(_is_playing){
-		if(_is_playing && this.landmarks.length > 0){
+		if(this.landmarks.length > 0){
 
 			this.mouth_size = 0;
 			this.face_size = 0;
@@ -206,7 +206,9 @@ class Faces{
 			this.amp *= this.distance_to_target;
 			this.pan = (this.face_x_pos / width) * (-2.0) + 1.0;
 			this.pan = constrain(this.pan,-1,1);
+		}
 
+		if(_is_playing){
 			this.osc.freq(this.freq, 0.1);
 			this.osc.amp(this.amp, 0.1);
 			this.osc.pan(this.pan, 0.1);
@@ -285,7 +287,7 @@ class Faces{
 					let x = -cam_width/2+this.landmarks[i]._x;
 					let y = -cam_height/2+this.landmarks[i]._y;
 					push();
-					translate(x,y);
+					translate(x,y - 5);
 					scale(-1,1);
 					text(i,0,0);
 					scale(-1,1);
