@@ -12,9 +12,9 @@ video{
 }
 
 @keyframes flicker{
-  	0%   {background-color: rgb(0,255,0);}
+  	0%   {background-color: rgb(215,255,0);}
   	50%  {background-color: rgb(255,255,255);}
-  	100% {background-color: rgb(0,255,0);}
+  	100% {background-color: rgb(215,255,0);}
 }
 
 .information{
@@ -47,7 +47,7 @@ select{
 	line-height: 1.8;
 	font-size: 11pt;
 	font-family: 'Roboto Mono', monospace;
-	background-color: rgb(0,255,0);
+	background-color: rgb(215,255,0);
 	outline: none;
 	-webkit-appearance: none;
     border: 0px;
@@ -81,7 +81,7 @@ select:focus{
 }
 
 .highlight{
-	background-color: rgb(0,255,0);
+	background-color: rgb(215,255,0);
 	/*
 	border: 1px solid black;
 	border-radius: 3px;
