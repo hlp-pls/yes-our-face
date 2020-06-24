@@ -294,7 +294,7 @@ async function predict(){
 			new faceapi.TinyFaceDetectorOptions(options)
 		).withFaceLandmarks(true)
 		//console.log(detections)
-		console.log("detection");
+		//console.log("detection");
 		//console.log(detections[0].landmarks)
 		const resizedDetections = faceapi.resizeResults(detections,displaySize);
 	if(resizedDetections[0]){
