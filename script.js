@@ -211,14 +211,16 @@ function draw(){
 	
 	if(is_model_loaded){
 		
-			//카메라 피드와 기하형태 위치 확인
-			image(webcam,
-			-cam_width/2,
-			-cam_height/2,
-			cam_width,cam_height);
+		//카메라 피드와 기하형태 위치 확인
+		/*
+		image(webcam,
+		-cam_width/2,
+		-cam_height/2,
+		cam_width,cam_height);
+		*/
 		
 		predict_count++;
-		console.log(predict_count, predictRate);
+		//console.log(predict_count, predictRate);
 		
 		if(predict_count>predictRate){
 			predict();
