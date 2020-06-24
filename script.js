@@ -34,7 +34,7 @@ let select_p5dom;
 let instruction_p5dom, capture_p5dom, record_p5dom, sound_p5dom;
 let amp_p5dom, pan_p5dom, freq_p5dom;
 
-let predictRate = (isMobile.any())? 8 : 2;
+let predictRate = (isMobile.any())? 4 : 2;
 let predict_count = 0;
 
 let is_playing = false;
@@ -210,21 +210,13 @@ function draw(){
 	// --> 여기까지.
 	
 	if(is_model_loaded){
-		// --> 일정시간이 지난후 카메라 피드 사라지도록 
-		/*  
-		if(cam_count<400){
-			cam_count++;
+		
 			//카메라 피드와 기하형태 위치 확인
 			image(webcam,
 			-cam_width/2,
 			-cam_height/2,
 			cam_width,cam_height);
-		}
-
-		if(cam_count>=200){
-			background(255,1);
-		}
-		*/
+		
 		predict_count++;
 		console.log(predict_count, predictRate);
 		
@@ -299,6 +291,7 @@ async function predict(){
 			new faceapi.TinyFaceDetectorOptions(options)
 		).withFaceLandmarks(true)
 		//console.log(detections)
+		console.log("detection");
 		//console.log(detections[0].landmarks)
 		const resizedDetections = faceapi.resizeResults(detections,displaySize);
 	if(resizedDetections[0]){
