@@ -174,7 +174,7 @@ function recordSound(){
 	if(is_playing){
 		record_count++;
 		if(!is_recording){
-			record_p5dom.html("<span class='highlight'>" + "Save Sound" + "</span>");
+			record_p5dom.html("<div class='categ'><span class='highlight'>" + "Save Sound" + "</span></div>" + "<div class='recording_animation'></div>");
 			is_recording = true;
 		}else{
 			record_p5dom.html("<span class='highlight'>" + "Record Sound" + "</span>");
