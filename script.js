@@ -226,7 +226,8 @@ function draw(){
 		}
 		*/
 		predict_count++;
-
+		console.log(predict_count, predictRate);
+		
 		if(predict_count>predictRate){
 			predict();
 			predict_count = 0;
