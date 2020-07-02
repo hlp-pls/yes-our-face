@@ -79,6 +79,7 @@ select:focus{
 }
 
 #select,.categ{
+	position: relative;
 	float: left;
 	margin-right: 10px;	
 }
@@ -90,6 +91,11 @@ select:focus{
 }
 
 #record{
+	min-height: 26px; 
+	clear:both;
+}
+
+#capture{
 	clear:both;
 }
 
