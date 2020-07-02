@@ -84,8 +84,13 @@ select:focus{
 }
 
 #on,#off{
+	position: relative;
 	float: left;
 	margin-right: 9px;
+}
+
+#record{
+	clear:both;
 }
 
 #instructions{
