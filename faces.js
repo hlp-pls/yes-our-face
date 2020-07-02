@@ -203,6 +203,7 @@ class Faces{
 			this.freq = ( 600 * this.mouth_size / (width * height * 0.02) + 100 ) * 5.0 / stroke_selection;
 			this.amp = 0.9 * (-1. * this.face_size) / (width * height * 0.2) + 0.1;
 			//console.log(this.face_size);
+			if(!this.drawing) this.distance_to_target = 1.0;
 			this.amp *= this.distance_to_target;
 			this.pan = (this.face_x_pos / width) * (-2.0) + 1.0;
 			this.pan = constrain(this.pan,-1,1);

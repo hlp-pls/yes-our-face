@@ -28,7 +28,16 @@ video{
 	font-family: 'Roboto Mono', monospace;
 }
 
-#onoff:hover{
+.highlight_temp:hover{
+	background-color: rgb(215,255,0);
+}
+
+#on:hover{
+	cursor: pointer;
+	transform: translate(0,-2px);
+}
+
+#off:hover{
 	cursor: pointer;
 	transform: translate(0,-2px);
 }
@@ -44,7 +53,7 @@ video{
 }
 
 select{
-	line-height: 1.8;
+	line-height: 1.2;
 	font-size: 11pt;
 	font-family: 'Roboto Mono', monospace;
 	background-color: rgb(215,255,0);
@@ -61,7 +70,7 @@ select{
 
 select:hover{
 	cursor: pointer;
-	transform: translate(0,-1px);
+	transform: translate(0,-2px);
 }
 
 select:focus{
@@ -72,6 +81,18 @@ select:focus{
 #select,.categ{
 	float: left;
 	margin-right: 10px;	
+}
+
+#on,#off{
+	float: left;
+	margin-right: 9px;
+}
+
+#instructions{
+	position: relative;
+	float: left;
+	width: 100%;
+	margin-bottom: 10px;
 }
 
 .wrapper{

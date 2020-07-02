@@ -32,6 +32,7 @@ let scr_scale;
 let select_container;
 let select_p5dom;
 let instruction_p5dom, capture_p5dom, record_p5dom, sound_p5dom;
+let sound_on_p5dom, sound_off_p5dom; 
 let amp_p5dom, pan_p5dom, freq_p5dom;
 
 let predictRate = (isMobile.any())? 4 : 2;
@@ -77,6 +78,10 @@ function setup(){
 	pan_p5dom = select('#pan');
 
 	sound_p5dom = select('#sound');
+
+	sound_on_p5dom = select('#on');
+	sound_off_p5dom = select('#off');
+
 	instruction_p5dom = select('#instructions');
 	capture_p5dom = select('#capture');
 	record_p5dom = select('#record');
@@ -93,12 +98,16 @@ function setup(){
 
 
 	if(isMobile.any()){
-		sound_p5dom.touchEnded(initSound);
+		//sound_p5dom.touchEnded(initSound);
+		sound_on_p5dom.touchEnded(soundON);
+		sound_off_p5dom.touchEnded(soundOFF);
 		capture_p5dom.touchEnded(captureScreen);
 		record_p5dom.touchEnded(recordSound);
 		select('canvas').touchEnded(canvasTouchCount);
 	}else{
-		sound_p5dom.mouseClicked(initSound);
+		//sound_p5dom.mouseClicked(initSound);
+		sound_on_p5dom.mouseClicked(soundON);
+		sound_off_p5dom.mouseClicked(soundOFF);
 		capture_p5dom.mouseClicked(captureScreen);
 		record_p5dom.mouseClicked(recordSound);
 		select('canvas').doubleClicked(canvasDoubleInteraction);
@@ -182,18 +191,44 @@ function recordSound(){
 		}
 	}
 }
+/*
+<div id='on'><span class='highlight_temp'>ON</span></div>
+<div id='off'><span class='highlight_temp highlight'>OFF</span></div>
+*/
+function soundON(){
+	console.log("sound on!");
+	if(!is_playing){
+		userStartAudio();
+		is_playing = true;
+		sound_on_p5dom.html("<span class='highlight_temp highlight'>ON</span>");
+		sound_off_p5dom.html("<span class='highlight_temp'>OFF</span>");
+	}
+}
 
+function soundOFF(){
+	console.log("sound off!");
+	if(is_playing){
+		is_playing = false;
+		sound_on_p5dom.html("<span class='highlight_temp'>ON</span>");
+		sound_off_p5dom.html("<span class='highlight_temp highlight'>OFF</span>");
+	}
+}
+/*
 function initSound(){
 	if(!is_playing){
 		userStartAudio();
 		is_playing = true;
-		sound_p5dom.html("<div class='categ'>" + "Sound" + "</div>" + "<div id='onoff'><span class='highlight'>" + "OFF" + "</span></div>");
+		sound_p5dom.html("<div class='categ'>" + "Sound" + "</div>" + 
+			"<div id='on'><span class='highlight_temp highlight'>ON</span></div>" + 
+			"<div id='off'><span class='highlight_temp'>OFF</span></div>");
 	}else{
 		is_playing = false;
-		sound_p5dom.html("<div class='categ'>" + "Sound" + "</div>" + "<div id='onoff'><span class='highlight'>" + "ON" + "</span></div>");
+		sound_p5dom.html("<div class='categ'>" + "Sound" + "</div>" + 
+			"<div id='on'><span class='highlight_temp'>ON</span></div>" + 
+			"<div id='off'><span class='highlight_temp highlight'>OFF</span></div>");
 	}
 }
-
+*/
 function windowResized(){
 	resizeCanvas(windowWidth,windowHeight);
 }
@@ -201,8 +236,8 @@ function windowResized(){
 function modelLoaded(){
 	console.log("model loaded");
 	is_model_loaded = true;
-	instruction_p5dom.html( "Model loaded!" );
-	instruction_p5dom.remove();
+	instruction_p5dom.html( "Yes, our faces create sounds." );
+	//instruction_p5dom.remove();
 }
 
 function draw(){
