@@ -117,7 +117,7 @@ select:focus{
 
 .recording_animation{
 	float: left;
-	transform: translate(0,4.5px);
+	transform: translate(0,5px);
 	width: 16px;
 	height: 16px;
 	border-radius: 8px;
